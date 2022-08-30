@@ -17,3 +17,8 @@ $ unshare -U keyctl revoke $n
 $ keyctl print $n
 keyctl_read_alloc: Key has been revoked
 ```
+
+Further reading:
+
+* https://blog.jessfraz.com/post/two-objects-not-namespaced-linux-kernel/
+* https://github.com/antitree/keyctl-unmask
