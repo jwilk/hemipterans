@@ -1,0 +1,4 @@
+# valid option, but not highlighted:
+no-auto-key-locate
+
+# vim:ft=gpg
