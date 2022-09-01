@@ -7,11 +7,6 @@ That doesn't sound right.
 That's been a long ago.
 Perhaps it's time to remove them from the man page?
 
-> subcode=2
-
-Instead of hardcoded number, you could use `TIOCL_*` constants from `<linux/tiocl.h>`.
-They are available since [v2.5.71](https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/commit/?id=6cd8b04781e03b2669c764331181a2d3a8511fe5).
-
 > ```c
 > struct {
 >       char  subcode;
