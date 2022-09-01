@@ -53,9 +53,3 @@ These subcodes are not documented:
 #define TIOCL_BLANKEDSCREEN	15	/* return which vt was blanked */
 #define TIOCL_GETKMSGREDIRECT	17	/* get the vt the kernel messages are restricted to */
 ```
-
-Further reading:
-
-* https://terminalguide.namepad.de/mouse/
-* https://terminalguide.namepad.de/mode/p9/
-* https://terminalguide.namepad.de/mode/p1000/
