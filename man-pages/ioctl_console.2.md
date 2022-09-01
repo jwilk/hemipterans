@@ -37,14 +37,3 @@ These selection modes are not documented:
 #define 	TIOCL_SELMOUSEREPORT	16	/* report beginning of selection */
 #define 	TIOCL_SELBUTTONMASK	15	/* button mask for report */
 ```
-
-These subcodes are not documented:
-
-```c
-#define TIOCL_SETKMSGREDIRECT	11	/* restrict kernel messages to a vt */
-#define TIOCL_GETFGCONSOLE	12	/* get foreground vt */
-#define TIOCL_SCROLLCONSOLE	13	/* scroll console */
-#define TIOCL_BLANKSCREEN	14	/* keep screen blank even if a key is pressed */
-#define TIOCL_BLANKEDSCREEN	15	/* return which vt was blanked */
-#define TIOCL_GETKMSGREDIRECT	17	/* get the vt the kernel messages are restricted to */
-```
