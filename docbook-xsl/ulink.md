@@ -1,2 +1,4 @@
-`<ulink url="http://example.org/">…</ulink>`
-are not hyperlinked in `man -Thtml` output.
+`<ulink url="http://example.org/"/>` is rendered in blue,
+but `<ulink url="http://example.org/">foo</ulink>` is not.
+
+Neither of them are actually hyperlinked `man -Thtml` output.
