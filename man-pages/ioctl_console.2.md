@@ -29,6 +29,12 @@ struct {
 ioctl(fd, TIOCLINUX, &data.subcode);
 ```
 
+> sel_mode is 0 for character-by-character selection,
+> 1 for word-by-word selection,
+> or 2 for line-by-line selection.
+
+`TIOCL_*` constants are available for selection modes.
+
 These selection modes are not documented:
 
 ```c
