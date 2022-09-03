@@ -1,3 +1,15 @@
+> GIO\_FONT
+>
+> GIO\_FONTX
+>
+> PIO\_FONT
+>
+> PIO\_FONTX
+>
+> PIO\_FONTRESET
+
+These were all removed in [v5.12](https://git.kernel.org/linus/ff2047fb755d4415ec3c70ac799889371151796d).
+
 > These are legal only for the superuser or the owner of the current terminal.
 
 That doesn't sound right.
