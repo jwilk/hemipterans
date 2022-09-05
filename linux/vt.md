@@ -30,3 +30,9 @@ $ printf '\33[?18;0;1c'
 ```
 
 <https://terminalguide.namepad.de/seq/csi_sc__p/>
+
+---
+
+Bracketed paste mode is missing.
+
+<https://invisible-island.net/xterm/xterm-paste64.html>
