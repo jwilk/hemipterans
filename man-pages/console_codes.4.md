@@ -12,10 +12,8 @@ OTOH, in <https://github.com/telmich/gpm/issues/29>, Egmont Koblinger wrote:
 
 So I'm confused.
 
----
-
 Further reading:
 
-* https://terminalguide.namepad.de/mouse/
-* https://terminalguide.namepad.de/mode/p9/
-* https://terminalguide.namepad.de/mode/p1000/
+* <https://terminalguide.namepad.de/mouse/>
+* <https://terminalguide.namepad.de/mode/p9/>
+* <https://terminalguide.namepad.de/mode/p1000/>
