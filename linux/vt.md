@@ -4,10 +4,11 @@ Italic color should be configurable via console-codes.
 
 ---
 
+Writing to
 `/sys/module/vt/parameters/italic`
 and
 `/sys/module/vt/parameters/underline`
-should be writable.
+doesn't seem to have any effect.
 
 ---
 
