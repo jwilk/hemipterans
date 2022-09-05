@@ -17,3 +17,39 @@ Further reading:
 * <https://terminalguide.namepad.de/mouse/>
 * <https://terminalguide.namepad.de/mode/p9/>
 * <https://terminalguide.namepad.de/mode/p1000/>
+
+---
+
+<code>ESC [ ? <em>x</em> ; <em>y</em> ; <em>z</em> c</code> is not documented.
+
+<https://terminalguide.namepad.de/seq/csi_sc__p/>
+
+---
+
+<code>ESC [ ? <em>x</em> ; <em>y</em> m</code> is not documented.
+
+<https://terminalguide.namepad.de/seq/csi_sm__p/>
+
+---
+
+Displaying control characters doesn't work in UTF-8 mode:
+<https://terminalguide.namepad.de/mode/3/>
+
+---
+
+Setting G0 charset `ESC ( 0` doesn't seem to work in UTF-8 mode.
+Oddly, setting G1 seems to work fine.
+
+Likely because:
+
+```c
+if (vc->vc_utf && !vc->vc_disp_ctrl)
+        return *c = vc_translate_unicode(vc, *c, rescan);
+```
+---
+
+Are descriptions of
+`ESC [ 10 m`,
+`ESC [ 11 m`,
+`ESC [ 12 m`
+correct?
