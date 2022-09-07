@@ -1,0 +1,27 @@
+From 5057ae6b6e19a2e1cf6f7cd4dfbde217f778db9c Mon Sep 17 00:00:00 2001
+From: Jakub Wilk <jwilk@jwilk.net>
+Date: Sat, 26 Jan 2019 17:48:21 +0100
+Subject: [PATCH] Warn against suspicious two-argument open() calls.
+
+$ perl -e 'print <>' /etc/issue
+two-argument open(..., "/etc/issue") at -e line 1.
+Debian GNU/Linux 9 \n \l
+
+$ perl -e 'print <<>>' /etc/issue
+Debian GNU/Linux 9 \n \l
+---
+ doio.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/doio.c
++++ b/doio.c
+@@ -491,6 +491,9 @@
+     bool was_fdopen = FALSE;
+     char *type  = NULL;
+ 
++    if (num_svs == 0 && oname[0] != '<' && oname[0] != '>')
++	Perl_ck_warner_d(aTHX_ packWARN(WARN_DEPRECATED), "two-argument open(..., \"%s\")", oname);
++
+     PERL_ARGS_ASSERT_DO_OPEN6;
+ 
+     /* For ease of blame back to 5.000, keep the existing indenting. */
