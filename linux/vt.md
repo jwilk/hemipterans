@@ -12,7 +12,7 @@ doesn't seem to have any effect.
 
 ---
 
-There's no 
+There's no
 `/sys/module/vt/parameters/halfbright`.
 
 ---

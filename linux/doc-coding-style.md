@@ -1,5 +1,5 @@
 ```console
-$ tail -n2 Documentation/process/coding-style.rst 
+$ tail -n2 Documentation/process/coding-style.rst
 Kernel :ref:`process/coding-style.rst <codingstyle>`, by greg@kroah.com at OLS 2002:
 http://www.kroah.com/linux/talks/ols_2002_kernel_codingstyle_talk/html/
 ```

@@ -1,4 +1,4 @@
-> The maximum size of the resulting core filename is 128 bytes (64 bytes in kernels before 2.6.19). 
+> The maximum size of the resulting core filename is 128 bytes (64 bytes in kernels before 2.6.19).
 
 I believe this is inaccurate.
 
