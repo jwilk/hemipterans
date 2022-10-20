@@ -1,3 +1,9 @@
+> PIO_CMAP
+>
+> Change the default text‐mode color map.
+
+Not only the default. It also updates the color map for all the consoles.
+
 > GIO\_FONT
 >
 > GIO\_FONTX
