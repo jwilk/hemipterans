@@ -1,0 +1,5 @@
+@-moz-document domain(vim.org) {
+
+    h1 { /* "h1" should be a single token */ }
+
+}
