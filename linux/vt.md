@@ -36,3 +36,11 @@ $ printf '\33[?18;0;1c'
 Bracketed paste mode is missing.
 
 <https://invisible-island.net/xterm/xterm-paste64.html>
+
+---
+
+Setting high-intensity foreground color implicitly enables bold.
+As a consequence, this leaves bold on:
+```console
+printf '\33[94mfoo\33[39m\n'
+```
