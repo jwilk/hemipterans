@@ -17,3 +17,7 @@ The first slash seems to be optional.
 
 RFC 2255 ("The LDAP URL Format")
 looks weirdly in the *SEE ALSO* section.
+
+------------------------------------------------------------------------
+
+It's never explained what `gopher+_string` is.
