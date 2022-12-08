@@ -5,3 +5,7 @@ especially when `ISSUE_TEMPLATE.md` exists.
 
 When you misspell the label name,
 a new label will be created.
+
+---
+
+`git hub issue new 42` is not an error.
