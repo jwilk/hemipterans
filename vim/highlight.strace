@@ -1,0 +1,1 @@
+getrandom("\x86\x17\x9d\x09", 4, GRND_NONBLOCK) = 4
