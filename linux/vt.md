@@ -44,3 +44,6 @@ As a consequence, this leaves bold on:
 ```console
 printf '\33[94mfoo\33[39m\n'
 ```
+---
+
+CSI being equivalent to `ESC [` is a bad idea security-wise.
