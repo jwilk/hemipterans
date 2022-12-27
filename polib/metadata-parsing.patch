@@ -1,0 +1,82 @@
+changeset:   234:956bfcda5659
+tag:         tip
+parent:      180:641abe0e1b5c
+user:        Jakub Wilk <jwilk@jwilk.net>
+date:        2012-12-28 23:31 +0100
+summary:     Factor out the metadata parsing code.
+
+diff --git a/polib.py b/polib.py
+--- a/polib.py
++++ b/polib.py
+@@ -281,6 +281,33 @@
+         self.metadata = {}
+         self.metadata_is_fuzzy = 0
+ 
++    def parse_metadata(self, raw_metadata, fuzzy=False):
++        '''
++        Parses the metadata.
++        '''
++        key = None
++        last = False
++        self.metadata_is_fuzzy = bool(fuzzy)
++        self.metadata.clear()
++        for msg in raw_metadata.split('\n'):
++            if msg == '':
++                last = True
++            elif last:
++                # only trailing empty lines are allowed
++                raise ValueError('syntax error in metadata: empty line')
++            elif msg[1].isspace():
++                if key is not None:
++                    self.metadata[key] += '\n' + msg.strip()
++                else:
++                    raise ValueError('syntax error in metadata: '
++                        'leading garbage')
++            else:
++                try:
++                    key, val = msg.split(':', 1)
++                except ValueError:
++                    raise ValueError('syntax error in metadata: missing colon')
++                self.metadata[key] = val.strip()
++
+     def __unicode__(self):
+         """
+         Returns the unicode representation of the file.
+@@ -1319,15 +1346,8 @@
+         if metadataentry:  # metadata found
+             # remove the entry
+             self.instance.remove(metadataentry)
+-            self.instance.metadata_is_fuzzy = metadataentry.flags
+-            key = None
+-            for msg in metadataentry.msgstr.splitlines():
+-                try:
+-                    key, val = msg.split(':', 1)
+-                    self.instance.metadata[key] = val.strip()
+-                except (ValueError, KeyError):
+-                    if key is not None:
+-                        self.instance.metadata[key] += '\n' + msg.strip()
++            self.instance.parse_metadata(metadataentry.msgstr,
++                fuzzy=metadataentry.flags)
+         # close opened file
+         if not isinstance(self.fhandle, list):  # must be file
+             self.fhandle.close()
+@@ -1589,17 +1609,7 @@
+             self.fhandle.seek(msgstrs_index[i][1])
+             msgstr = self.fhandle.read(msgstrs_index[i][0])
+             if i == 0:  # metadata
+-                raw_metadata, metadata = msgstr.split(b('\n')), {}
+-                for line in raw_metadata:
+-                    tokens = line.split(b(':'), 1)
+-                    if tokens[0] != b(''):
+-                        try:
+-                            k = tokens[0].decode(encoding)
+-                            v = tokens[1].decode(encoding)
+-                            metadata[k] = v.strip()
+-                        except IndexError:
+-                            metadata[k] = u('')
+-                self.instance.metadata = metadata
++                self.instance.parse_metadata(msgstr.decode(encoding))
+                 continue
+             # test if we have a plural entry
+             msgid_tokens = msgid.split(b('\0'))
+
