@@ -1,0 +1,137 @@
+diff --git a/src/tmperamental.c b/src/tmperamental.c
+--- a/src/tmperamental.c
++++ b/src/tmperamental.c
+@@ -1,5 +1,6 @@
+ /*
+  * Copyright (c) 2011 Paul Tagliamonte <paultag@debian.org>
++ * Copyright (c) 2014 Jakub Wilk <jwilk@jwilk.net>
+  *
+  * Permission is hereby granted, free of charge, to any person obtaining a
+  * copy of this software and associated documentation files (the "Software"),
+@@ -64,10 +65,38 @@
+     orig_freopen64 = dlsym(RTLD_NEXT, "freopen64");
+ }
+ 
++bool in_sticky_dir( const char *path ) {
++
++    char * pathdup = strdup(path);
++    if (pathdup == NULL)
++        abort();
++    char * pathdir = dirname(pathdir);
++    if (pathdir == NULL)
++        abort();
++
++    struct stat st;
++    int rc = stat(pathdir, &st);
++    if (rc != 0)
++        return false; /* oh well */
++    if ((st.st_mode & (S_IFDIR | S_ISVTX)) == (S_IFDIR | S_ISVTX))
++        return true;
++    return false;
++}
++
++bool is_safe_access ( const char * path, int mode ) {
++
++    /* /tmp is not allowed when TMPDIR is set */
++    if ( (getenv("TMPDIR") != NULL) && (strncmp("/tmp/", pathname, 5) == 0) )
++        return false;
++    if (in_sticky_dir(path) && (mode & (O_CREAT | O_EXCL) == O_CREAT))
++        return false;
++    return true;
++}
++
+ #define SIZE (100)
+ #define FIRST_FRAME (1)
+-void enforcer ( const char * pathname ) {
+-    if ( strncmp("/tmp/", pathname, 5) == 0 ) {
++void enforcer ( const char * pathname, int mode ) {
++    if ( !is_safe_access( pathname, mode ) ) {
+         int nframes;
+         void *buffer[SIZE];
+         fprintf(stderr, "tmperamental: caught a write to /tmp.\n");
+@@ -79,7 +108,7 @@
+ }
+ 
+ int open ( const char * pathname, int flags, ... ) {
+-    enforcer(pathname);
++    enforcer(pathname, flags);
+ 
+     va_list v;
+     va_start(v, flags);
+@@ -94,7 +123,7 @@
+ }
+ 
+ int open64 ( const char * pathname, int flags, ... ) {
+-    enforcer(pathname);
++    enforcer(pathname, flags);
+ 
+     va_list v;
+     va_start(v, flags);
+@@ -109,43 +138,60 @@
+ }
+ 
+ int mkdir ( const char *pathname, mode_t mode ) {
+-    enforcer( pathname );
++    enforcer( pathname, O_CREAT );
+ 
+     return orig_mkdir(pathname, mode);
+ }
+ 
+ int creat ( const char *pathname, mode_t mode ) {
+-    enforcer( pathname );
++    enforcer( pathname, O_CREAT );
+ 
+     return orig_creat(pathname, mode);
+ }
+ 
+ int creat64 ( const char *pathname, mode_t mode ) {
+-    enforcer( pathname );
++    enforcer( pathname, O_CREAT );
+ 
+     return orig_creat64(pathname, mode);
+ }
+ 
++static int fopen_flags( const char *mode ) {
++    int flags = 0;
++    char *p = mode;
++    while (*p) {
++        switch (*p++) {
++        case 'a':
++        case 'w':
++            flags |= O_CREAT;
++            break;
++        case 'x':
++            flags |= O_EXCL;
++            break;
++        }
++    }
++    return flags;
++}
++
+ FILE * fopen ( const char * path, const char *mode ) {
+-    enforcer(path);
++    enforcer(path, fopen_flags(mode) );
+ 
+     return orig_fopen( path, mode );
+ }
+ 
+ FILE * fopen64 ( const char * path, const char *mode ) {
+-    enforcer(path);
++    enforcer(path, fopen_flags(mode));
+ 
+     return orig_fopen64( path, mode );
+ }
+ 
+ FILE * freopen ( const char *path, const char *mode, FILE * stream ) {
+-    enforcer(path);
++    enforcer(path, fopen_flags(mode));
+ 
+     return orig_freopen(path, mode, stream);
+ }
+ 
+ FILE * freopen64 ( const char *path, const char *mode, FILE * stream ) {
+-    enforcer(path);
++    enforcer(path, fopen_flags(mode));
+ 
+     return orig_freopen64(path, mode, stream);
+ }
