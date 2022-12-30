@@ -1,1 +1,1 @@
-The `last_changed` field in is not human readable.
+The `last_changed` field is not human readable.
