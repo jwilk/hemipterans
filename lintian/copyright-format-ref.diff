@@ -1,0 +1,149 @@
+diff --git a/checks/source-copyright.desc b/checks/source-copyright.desc
+--- a/checks/source-copyright.desc
++++ b/checks/source-copyright.desc
+@@ -42,7 +42,7 @@
+ Tag: wiki-copyright-format-uri
+ Severity: pedantic
+ Certainty: possible
+-Ref: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++Ref: copyright-format
+ Info: Format URI of the machine-readable copyright file refers to Debian Wiki.
+  .
+  Debian Wiki is not used for the format development anymore.  Please use
+@@ -52,7 +52,7 @@
+ Tag: unversioned-copyright-format-uri
+ Severity: pedantic
+ Certainty: possible
+-Ref: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++Ref: copyright-format fields
+ Info: Format URI of the machine-readable copyright file is not versioned.
+  .
+  Please use
+@@ -62,7 +62,7 @@
+ Tag: out-of-date-copyright-format-uri
+ Severity: pedantic
+ Certainty: possible
+-Ref: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++Ref: copyright-format fields
+ Info: A newer version of the machine-readable copyright file specification,
+  than the one referenced by the copyright file, is available.
+  .
+@@ -71,14 +71,14 @@
+ Tag: syntax-error-in-dep5-copyright
+ Severity: normal
+ Certainty: possible
+-Ref: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++Ref: copyright-format file-syntax, policy 5.1
+ Info: The machine-readable copyright file didn't pass Debian control file
+  syntax check.
+ 
+ Tag: obsolete-field-in-dep5-copyright
+ Severity: normal
+ Certainty: possible
+-Ref: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++Ref: copyright-format paragraphs
+ Info: The machine-readable copyright file uses a field, that used to be defined
+  by the specification, but has been renamed since then.
+  .
+@@ -91,7 +91,7 @@
+ Tag: comma-separated-files-in-dep5-copyright
+ Severity: normal
+ Certainty: possible
+-Ref: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++Ref: copyright-format fields
+ Info: A list of files in the machine-readable copyright format appears to be
+  separated by commas.  The file list should be whitespace separated instead.
+  .
+@@ -100,28 +100,28 @@
+ Tag: missing-field-in-dep5-copyright
+ Severity: normal
+ Certainty: possible
+-Ref: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++Ref: copyright-format paragraphs
+ Info: The paragraph in the machine readable copyright file is missing a field
+  that is required by the specification.
+ 
+ Tag: missing-license-paragraph-in-dep5-copyright
+ Severity: normal
+ Certainty: possible
+-Ref: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++Ref: copyright-format license-field
+ Info: The files paragraph in the machine readable copyright file references a
+  license, for which no standalone license paragraph exists.
+ 
+ Tag: missing-license-text-in-dep5-copyright
+ Severity: normal
+ Certainty: possible
+-Ref: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++Ref: copyright-format license-field
+ Info: The standalone license header contains only short license name, but not
+  the license text.
+ 
+ Tag: unused-license-paragraph-in-dep5-copyright
+ Severity: minor
+ Certainty: possible
+-Ref: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++Ref: copyright-format license-field
+ Info: The license paragraph in the machine-readable copyright file is not
+  referenced by any files paragraph.  It could be a typo in the license name or
+  the license paragraph is simply not needed and can be removed.
+@@ -129,6 +129,6 @@
+ Tag: unknown-paragraph-in-dep5-copyright
+ Severity: normal
+ Certainty: possible
+-Ref: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++Ref: copyright-format paragraphs
+ Info: The machine-readable copyright file contains a paragraph that is neither
+  a standalone license paragraph nor a files paragraph.
+diff --git a/data/output/manual-references b/data/output/manual-references
+--- a/data/output/manual-references
++++ b/data/output/manual-references
+@@ -9,6 +9,32 @@
+ #
+ # Last updated: 2012-03-01
+ 
++copyright-format::::Machine-readable debian/copyright file::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++copyright-format::introduction::Introduction::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#introduction
++copyright-format::rationale::Rationale::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#rationale
++copyright-format::acknowledgements::Acknowledgements::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#acknowledgements
++copyright-format::file-syntax::File syntax::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#file-syntax
++copyright-format::paragraphs::Paragraphs::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#paragraphs
++copyright-format::fields::Fields::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#fields
++copyright-format::license-specification::License specification::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#license-specification
++copyright-format::examples::Examples::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#examples
++copyright-format::header-paragraph::header paragraph::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#header-paragraph
++copyright-format::files-paragraph::Files paragraph::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#files-paragraph
++copyright-format::header-paragraph::header paragraph::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#header-paragraph
++copyright-format::format-field::Format::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#format-field
++copyright-format::upstream-name-field::Upstream-Name::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#upstream-name-field
++copyright-format::source-field::Source::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#source-field
++copyright-format::disclaimer-field::Disclaimer::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#disclaimer-field
++copyright-format::comment-field::Comment::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#comment-field
++copyright-format::license-field::License::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#license-field
++copyright-format::copyright-field::Copyright::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#copyright-field
++copyright-format::files-field::Files::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#files-field
++copyright-format::copyright-field::Copyright::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#copyright-field
++copyright-format::license-field::License::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#license-field
++copyright-format::comment-field::Comment::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#comment-field
++copyright-format::license-field::License::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#license-field
++copyright-format::comment-field::Comment::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#comment-field
++copyright-format::spdx::SPDX::http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#spdx
+ debconf-spec::::Configuration management::http://www.debian.org/doc/packaging-manuals/debconf_specification.html
+ debconf-spec::aen27::Introduction::http://www.debian.org/doc/packaging-manuals/debconf_specification.html#AEN27
+ debconf-spec::aen30::Configuration Data::http://www.debian.org/doc/packaging-manuals/debconf_specification.html#AEN30
+diff --git a/private/refresh-manual-refs b/private/refresh-manual-refs
+--- a/private/refresh-manual-refs
++++ b/private/refresh-manual-refs
+@@ -119,6 +119,12 @@
+         qr/<a href="(#.+?)">([\w\s[:punct:]]+?)<\/a>/,
+         [ [ 'section', 'url' ], [ 'title' ] ]
+     ],
++    'copyright-format' => [
++        '/usr/share/doc/debian-policy/copyright-format-1.0.html',
++        'http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/',
++        qr/<a href="(#.+?)">([\w\s[:punct:]]+?)<\/a>/,
++        [ [ 'section', 'url' ], [ 'title' ] ]
++    ],
+     'fhs' => [
+         '/usr/share/doc/debian-policy/fhs/fhs-2.3.html',
+         'http://www.pathname.com/fhs/pub/fhs-2.3.html',
