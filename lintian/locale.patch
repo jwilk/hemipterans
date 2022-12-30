@@ -1,0 +1,34 @@
+diff --git a/doc/README.developers.pod b/doc/README.developers.pod
+index 640f62906..a03665d2d 100644
+--- a/doc/README.developers.pod
++++ b/doc/README.developers.pod
+@@ -169,11 +169,6 @@ Beware of two things: If LINTIAN_BASE is not set, Lintian (<< 2.5.18~)
+ will attempt to use the code from the installed version (in
+ /usr/share/lintian).
+ 
+-The other issue is that Lintian needs a C.UTF-8 (or an en_US.UTF-8)
+-locale.  If this is absent, it may trigger some issues with some
+-(e.g. manpage) checks.  With libc-bin from Wheezy and Lintian 2.5.5,
+-this is no longer an issue.
+-
+ =head2 collections and checks
+ 
+ Collections (as the names suggests) are used to extract or/and
+diff --git a/doc/lintian.rst b/doc/lintian.rst
+index 24c7ea31c..fa034c20e 100644
+--- a/doc/lintian.rst
++++ b/doc/lintian.rst
+@@ -185,10 +185,6 @@ use that directly. By setting LINTIAN_BASE (or using the --root option)
+ lintian can be run from the source directory as if it had been installed
+ on your system.
+ 
+-The only known caveat of using Lintian from the source directory is that
+-Lintian requires a C.UTF-8 (or en_US.UTF-8) locale to correctly process
+-some files. (Is that still true?)
+-
+ .. _section-2.2:
+ 
+ Running lintian
+-- 
+2.39.0
+
