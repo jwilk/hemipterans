@@ -1,0 +1,56 @@
+diff --git a/checks/files.desc b/checks/files.desc
+--- a/checks/files.desc
++++ b/checks/files.desc
+@@ -1059,7 +1059,7 @@
+ Tag: non-conf-file-in-modprobe.d
+ Severity: important
+ Certainty: certain
+-Ref: http://lists.debian.org/debian-devel/2009/03/msg00119.html
++Ref: modprobe.conf(5), http://lists.debian.org/debian-devel/2009/03/msg00119.html
+ Info: Files in <tt>/etc/modprobe.d</tt> should use filenames ending in
+  <tt>.conf</tt>.  modprobe currently warns about files which do not match
+  this convention and at some point in the future the files will no longer
+diff --git a/checks/lintian.desc b/checks/lintian.desc
+--- a/checks/lintian.desc
++++ b/checks/lintian.desc
+@@ -20,3 +20,4 @@
+  parameter specifies the package type (binary is the default), &lt;tag&gt;
+  is the tag to suppress, and &lt;extra&gt; is any specific information for
+  the particular tag to suppress.
++Ref: lintian 2.4
+diff --git a/checks/shared-libs.desc b/checks/shared-libs.desc
+--- a/checks/shared-libs.desc
++++ b/checks/shared-libs.desc
+@@ -425,6 +425,7 @@
+  .
+  The .la file in itself may be useful, if the library is loaded dynamically
+  via libltdl.
+-Ref: http://wiki.debian.org/ReleaseGoals/LAFileRemoval,
++Ref: policy 10.2,
++     http://wiki.debian.org/ReleaseGoals/LAFileRemoval,
+      http://lists.debian.org/debian-devel/2011/05/msg01003.html,
+      http://lists.debian.org/debian-devel/2011/05/msg01146.html
+diff --git a/checks/source-copyright.desc b/checks/source-copyright.desc
+--- a/checks/source-copyright.desc
++++ b/checks/source-copyright.desc
+@@ -71,7 +71,7 @@
+ Tag: syntax-error-in-dep5-copyright
+ Severity: normal
+ Certainty: possible
+-Ref: http://dep.debian.net/deps/dep5/
++Ref: http://dep.debian.net/deps/dep5/, policy 5.1
+ Info: The machine-readable copyright file didn't pass Debian control file
+  syntax check.
+ 
+diff --git a/lib/Lintian/Tag/Info.pm b/lib/Lintian/Tag/Info.pm
+--- a/lib/Lintian/Tag/Info.pm
++++ b/lib/Lintian/Tag/Info.pm
+@@ -238,7 +238,7 @@
+         my $text;
+         if ($ref =~ /^([\w-]+)\s+(.+)$/) {
+             $text = _manual_reference($1, $2);
+-        } elsif ($ref =~ /^([\w_-]+)\((\d\w*)\)$/) {
++        } elsif ($ref =~ /^([\w._-]+)\((\d\w*)\)$/) {
+             my ($name, $section) = ($1, $2);
+             my $url = $MANURL;
+             $url =~ s/NAME/$name/g;
