@@ -30,3 +30,7 @@ the limit on pathname length was removed.
 # tr -d '\n' < /proc/sys/kernel/core_pattern | wc -c
 127
 ```
+
+---
+
+Inconsistent formatting: `/proc/<crashing-PID>`
