@@ -1,0 +1,156 @@
+From 2450a8ebf7360f35189269ef4ebfe1c026ee6020 Mon Sep 17 00:00:00 2001
+From: Jakub Wilk <jwilk@jwilk.net>
+Date: Thu, 21 May 2009 13:50:16 +0200
+Subject: [PATCH libxml2 v2.7.3 2/2] WIP: xpointer: add string-range scheme.
+
+---
+ xpointer.c | 119 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 119 insertions(+)
+
+diff --git a/xpointer.c b/xpointer.c
+index f1117620..43cf8329 100644
+--- a/xpointer.c
++++ b/xpointer.c
+@@ -874,6 +874,7 @@ xmlXPtrWrapLocationSet(xmlLocationSetPtr val) {
+  ************************************************************************/
+ 
+ static void xmlXPtrEvalChildSeq(xmlXPathParserContextPtr ctxt, xmlChar *name);
++static void xmlXPtrEvalStringRange(xmlXPathParserContextPtr ctxt);
+ 
+ /*
+  * Macros for accessing the content. Those should be used only by the parser,
+@@ -1064,6 +1065,11 @@ xmlXPtrEvalXPtrPart(xmlXPathParserContextPtr ctxt, xmlChar *name) {
+ 	    xmlXPtrEvalChildSeq(ctxt, name2);
+ 	}
+ 	CUR_PTR = left;
++    } else if (xmlStrEqual(name, (xmlChar *) "string-range")) {
++	const xmlChar *left = CUR_PTR;
++	CUR_PTR = buffer;
++	xmlXPtrEvalStringRange(ctxt);
++	CUR_PTR = left;
+ #ifdef XPTR_XMLNS_SCHEME
+     } else if (xmlStrEqual(name, (xmlChar *) "xmlns")) {
+ 	const xmlChar *left = CUR_PTR;
+@@ -2942,6 +2948,119 @@ xmlXPtrEvalRangePredicate(xmlXPathParserContextPtr ctxt) {
+     SKIP_BLANKS;
+ }
+ 
++static void
++xmlXPtrEvalStringRange(xmlXPathParserContextPtr ctxt)
++{
++    const xmlChar *original_string;
++    const xmlChar *xpointer_str_left, *xpointer_str_right;
++    xmlChar *xpointer_str;
++    xmlXPathObjectPtr obj;
++    int level = 0;
++    int sign;
++    int offset = 0, length = 0;
++    xmlLocationSetPtr loc;
++    xmlLocationSetPtr result = NULL;
++    xpointer_str_left = CUR_PTR;
++    while (CUR != 0) {
++	if (CUR == ')') {
++	    level--;
++	    if (level == 0) {
++		NEXT;
++		break;
++	    }
++	} else if (CUR == '(')
++	    level++;
++	else if (CUR == '^')
++	    NEXT;
++	NEXT;
++    }
++    xpointer_str_right = CUR_PTR;
++    SKIP_BLANKS;
++    if (CUR != ',') {
++	XP_ERROR(XPTR_SYNTAX_ERROR);
++    } else
++	NEXT;
++    SKIP_BLANKS;
++    if (CUR == '-') {
++	sign = -1;
++	NEXT;
++    }
++    else
++	sign = 1;
++    if (!IS_ASCII_DIGIT(CUR))
++	XP_ERROR(XPTR_SYNTAX_ERROR);
++    while (IS_ASCII_DIGIT(CUR)) {
++	offset = offset * 10 + (CUR - '0');
++	NEXT;
++    }
++    offset *= sign;
++    SKIP_BLANKS;
++    if (CUR) {
++	if (CUR != ',') {
++	    XP_ERROR(XPTR_SYNTAX_ERROR);
++	} else
++	    NEXT;
++	if (CUR == '-') {
++	    sign = -1;
++	    NEXT;
++	}
++	else
++	    sign = 1;
++	if (!IS_ASCII_DIGIT(CUR)) {
++	    fprintf(stderr, "e4 %s\n", CUR_PTR);
++	    XP_ERROR(XPTR_SYNTAX_ERROR);
++	}
++	length = 0;
++	while (IS_ASCII_DIGIT(CUR)) {
++	    length = length * 10 + (CUR - '0');
++	    NEXT;
++	}
++    }
++    xpointer_str = xmlStrndup(xpointer_str_left, xpointer_str_right - xpointer_str_left);
++    if (xpointer_str == NULL) {
++        xmlXPtrErrMemory("allocating buffer");
++	return;
++    }
++
++    fprintf(stderr, "xpointer-str = %s\n", xpointer_str);
++    fprintf(stderr, "length = %d\n", length);
++    fprintf(stderr, "offset = %d\n", offset);
++
++    original_string = CUR_PTR;
++    CUR_PTR = xpointer_str;
++    xmlXPtrEvalXPointer(ctxt);
++    CUR_PTR = original_string;
++    xmlFree(xpointer_str);
++
++    if (ctxt->value == NULL)
++	return;
++
++    if ((ctxt->value == NULL) ||
++	((ctxt->value->type != XPATH_LOCATIONSET) &&
++	 (ctxt->value->type != XPATH_NODESET)))
++        XP_ERROR(XPATH_INVALID_TYPE)
++
++    obj = valuePop(ctxt);
++    if (obj->type == XPATH_NODESET) {
++	/* Convert to a location set */
++	xmlXPathObjectPtr tmp = xmlXPtrNewLocationSetNodeSet(obj->nodesetval);
++	xmlXPathFreeObject(obj);
++	obj = tmp;
++    }
++    loc = obj->user;
++    if (loc == NULL || loc->locNr != 1)
++        XP_ERROR(XPATH_INVALID_TYPE);
++
++    valuePush(ctxt, xmlXPtrWrapLocationSet(loc));
++
++#if 0
++    result = xmlXPtrLocationSetCreate(NULL);
++    xmlXPtrLocationSetAdd(result,
++	 xmlXPtrNewRange(root, 0, root, 0));
++    valuePush(ctxt, xmlXPtrWrapLocationSet(result));
++#endif
++}
++
+ #define bottom_xpointer
+ #include "elfgcchack.h"
+ #endif
+-- 
+2.39.0
+

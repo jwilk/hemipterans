@@ -1,0 +1,229 @@
+From 463e0eed1ba53bf5d901af89954937ba514f322a Mon Sep 17 00:00:00 2001
+From: Jakub Wilk <jwilk@jwilk.net>
+Date: Thu, 28 May 2009 19:21:52 +0200
+Subject: [PATCH libxml2 v2.7.3 1/2] WIP: xpointer: fix the string-range()
+ function.
+
+---
+ xpointer.c | 147 +++++++++++++++++------------------------------------
+ 1 file changed, 46 insertions(+), 101 deletions(-)
+
+diff --git a/xpointer.c b/xpointer.c
+index 5298fa5c..f1117620 100644
+--- a/xpointer.c
++++ b/xpointer.c
+@@ -2344,18 +2344,20 @@ found:
+  * xmlXPtrAdvanceChar:
+  * @node:  the node
+  * @indx:  the indx
+- * @bytes:  the number of bytes
++ * @chars:  the number of characters
+  *
+- * Advance a point of the associated number of bytes (not UTF8 chars)
++ * Advance a point of the associated number of UTF-8 characters
+  *
+  * Returns -1 in case of failure, 0 otherwise
+  */
+ static int
+-xmlXPtrAdvanceChar(xmlNodePtr *node, int *indx, int bytes) {
++xmlXPtrAdvanceChar(xmlNodePtr *node, int *indx, int chars) {
+     xmlNodePtr cur;
+     int pos;
+     int len;
+ 
++    fprintf(stderr, "advance0(%p, %d)\n", *node, chars);
++
+     if ((node == NULL) || (indx == NULL))
+ 	return(-1);
+     cur = *node;
+@@ -2363,64 +2365,47 @@ xmlXPtrAdvanceChar(xmlNodePtr *node, int *indx, int bytes) {
+ 	return(-1);
+     pos = *indx;
+ 
+-    while (bytes >= 0) {
+-	/*
+-	 * First position to the beginning of the first text node
+-	 * corresponding to this point
+-	 */
+-	while ((cur != NULL) &&
+-	       ((cur->type == XML_ELEMENT_NODE) ||
+-	        (cur->type == XML_DOCUMENT_NODE) ||
+-	        (cur->type == XML_HTML_DOCUMENT_NODE))) {
+-	    if (pos > 0) {
+-		cur = xmlXPtrGetNthChild(cur, pos);
+-		pos = 0;
+-	    } else {
+-		cur = xmlXPtrAdvanceNode(cur, NULL);
+-		pos = 0;
+-	    }
+-	}
++    fprintf(stderr, "advance1(%p, %d)\n", cur, pos);
++
++    while ((cur != NULL) && (*indx > 0) &&
++	   ((cur->type == XML_ELEMENT_NODE) ||
++	    (cur->type == XML_DOCUMENT_NODE) ||
++	    (cur->type == XML_HTML_DOCUMENT_NODE))) {
++	cur = xmlXPtrGetIndex(cur, *indx);
++	pos = 0;
++    }
++
++    fprintf(stderr, "advance2(%p, %d)\n", cur, pos);
+ 
++    while (1) {
++	/* Position to a text node. */
++	while ((cur != NULL) && (cur->type == XML_ELEMENT_NODE)) {
++	    cur = xmlXPtrAdvanceNode(cur, NULL);
++	    pos = 0;
++	}
++	fprintf(stderr, "advance3(%p, %d)\n", cur, pos);
+ 	if (cur == NULL) {
+ 	    *node = NULL;
+ 	    *indx = 0;
+ 	    return(-1);
+ 	}
+-
+-	/*
+-	 * if there is no move needed return the current value.
+-	 */
+-	if (pos == 0) pos = 1;
+-	if (bytes == 0) {
+-	    *node = cur;
+-	    *indx = pos;
+-	    return(0);
+-	}
+-	/*
+-	 * We should have a text (or cdata) node ... 
+-	 */
+ 	len = 0;
+-	if ((cur->type != XML_ELEMENT_NODE) &&
+-            (cur->content != NULL)) {
++	if (cur->content != NULL)
+ 	    len = xmlStrlen(cur->content);
++	while (chars > 0 && pos < len) {
++	    chars--;
++	    pos += xmlUTF8Size(cur->content + pos);
+ 	}
+-	if (pos > len) {
+-	    /* Strange, the indx in the text node is greater than it's len */
+-	    STRANGE
+-	    pos = len;
+-	}
+-	if (pos + bytes >= len) {
+-	    bytes -= (len - pos);
+-	    cur = xmlXPtrAdvanceNode(cur, NULL);
+-	    pos = 0;
+-	} else if (pos + bytes < len) {
+-	    pos += bytes;
++	fprintf(stderr, "advance4(%p, %d, %d)\n", cur, pos, len);
++	if (chars == 0) {
++	    if (pos > len) {
++		STRANGE
++	    }
+ 	    *node = cur;
+ 	    *indx = pos;
+ 	    return(0);
+ 	}
+     }
+-    return(-1);
+ }
+ 
+ /**
+@@ -2601,54 +2586,6 @@ xmlXPtrSearchString(const xmlChar *string, xmlNodePtr *start, int *startindex,
+     return(0);
+ }
+ 
+-/**
+- * xmlXPtrGetLastChar:
+- * @node:  the node
+- * @index:  the index
+- *
+- * Computes the point coordinates of the last char of this point
+- *
+- * Returns -1 in case of failure, 0 otherwise
+- */
+-static int
+-xmlXPtrGetLastChar(xmlNodePtr *node, int *indx) {
+-    xmlNodePtr cur;
+-    int pos, len = 0;
+-
+-    if ((node == NULL) || (indx == NULL))
+-	return(-1);
+-    cur = *node;
+-    pos = *indx;
+-
+-    if (cur == NULL)
+-	return(-1);
+-    
+-    if ((cur->type == XML_ELEMENT_NODE) ||
+-	(cur->type == XML_DOCUMENT_NODE) ||
+-	(cur->type == XML_HTML_DOCUMENT_NODE)) {
+-	if (pos > 0) {
+-	    cur = xmlXPtrGetNthChild(cur, pos);
+-	    pos = 0;
+-	}
+-    }
+-    while (cur != NULL) {
+-	if (cur->last != NULL)
+-	    cur = cur->last;
+-	else if ((cur->type != XML_ELEMENT_NODE) &&
+-	         (cur->content != NULL)) {
+-	    len = xmlStrlen(cur->content);
+-	    break;
+-	} else {
+-	    return(-1);
+-	}
+-    }
+-    if (cur == NULL)
+-	return(-1);
+-    *node = cur;
+-    *indx = len;
+-    return(0);
+-}
+-
+ /**
+  * xmlXPtrGetStartPoint:
+  * @obj:  an range
+@@ -2700,6 +2637,7 @@ xmlXPtrGetEndPoint(xmlXPathObjectPtr obj, xmlNodePtr *node, int *indx) {
+     if ((obj == NULL) || (node == NULL) || (indx == NULL))
+ 	return(-1);
+ 
++    fprintf(stderr, "get-endpoint(%p:%d -- %p:%d)\n", obj->user, obj->index, obj->user2, obj->index2);
+     switch (obj->type) {
+         case XPATH_POINT:
+ 	    *node = obj->user;
+@@ -2709,11 +2647,18 @@ xmlXPtrGetEndPoint(xmlXPathObjectPtr obj, xmlNodePtr *node, int *indx) {
+ 		*indx = obj->index;
+ 	    return(0);
+         case XPATH_RANGE:
+-	    *node = obj->user;
+-	    if (obj->index <= 0)
+-		*indx = 0;
+-	    else
+-		*indx = obj->index;
++	    if (obj->user2 != NULL) {
++		*node = obj->user2;
++		if (obj->index2 <= 0)
++		    *indx = 0;
++		else
++		    *indx = obj->index2;
++		fprintf(stderr, "^[1] %p:%d\n", *node, *indx);
++	    } else {
++		*node = obj->user;
++		*indx = xmlXPtrNbLocChildren(*node);
++		fprintf(stderr, "^[2] %p:%d\n", *node, *indx);
++	    }
+ 	    return(0);
+ 	default:
+ 	    break;
+@@ -2823,7 +2768,7 @@ xmlXPtrStringRangeFunction(xmlXPathParserContextPtr ctxt, int nargs) {
+ 	xmlXPtrGetStartPoint(oldset->locTab[i], &start, &startindex);
+ 	xmlXPtrGetEndPoint(oldset->locTab[i], &end, &endindex);
+ 	xmlXPtrAdvanceChar(&start, &startindex, 0);
+-	xmlXPtrGetLastChar(&end, &endindex);
++	xmlXPtrAdvanceChar(&end, &endindex, 0);
+ 
+ #ifdef DEBUG_RANGES
+ 	xmlGenericError(xmlGenericErrorContext,
+-- 
+2.39.0
+
